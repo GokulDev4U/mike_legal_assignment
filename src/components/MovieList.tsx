@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store/store";
 import { setSearchTerm, incrementPage } from "../features/movieSlice";
@@ -21,11 +21,11 @@ const MovieList: React.FC = () => {
     setAllMovies([]); // Clear previous movies
   }, 300);
 
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 1) {
       dispatch(incrementPage());
     }
-  };
+  },[dispatch]);
 
   useEffect(() => {
     // Append newly fetched movies to the existing list
@@ -37,7 +37,7 @@ const MovieList: React.FC = () => {
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [handleScroll]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
