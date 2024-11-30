@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store/store";
 import { setSearchTerm, incrementPage } from "../features/movieSlice";
@@ -10,17 +10,29 @@ const MovieList: React.FC = () => {
   const dispatch = useDispatch();
   const { searchTerm, page } = useSelector((state: RootState) => state.movies);
 
+  // Local state to store all fetched movies
+  const [allMovies, setAllMovies] = useState<any[]>([]);
+
   const { data: movies, error, isLoading } = useMovies(searchTerm, page);
 
   const handleSearch = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setSearchTerm(e.target.value));
+    dispatch(incrementPage()); // Reset to the first page on new search
+    setAllMovies([]); // Clear previous movies
   }, 300);
 
   const handleScroll = () => {
-    if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight) {
+    if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 1) {
       dispatch(incrementPage());
     }
   };
+
+  useEffect(() => {
+    // Append newly fetched movies to the existing list
+    if (movies) {
+      setAllMovies((prevMovies) => [...prevMovies, ...movies]);
+    }
+  }, [movies]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -48,13 +60,13 @@ const MovieList: React.FC = () => {
             ))}
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {movies?.map((movie: any) => (
+            {allMovies.map((movie: any) => (
               <MovieItem
                 key={movie.imdbID}
                 movie={movie}
               />
             ))}
-        </div>
+          </div>
         </>
       </div>
     </div>
