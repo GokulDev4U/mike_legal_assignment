@@ -59,7 +59,8 @@ const MovieList: React.FC = () => {
               <p className="text-center text-red-500">An unexpected error occurred</p>
             ))}
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {/* <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"> */}
+          <div className="flex flex-wrap gap-4">
             {allMovies.map((movie: any) => (
               <MovieItem
                 key={movie.imdbID}
